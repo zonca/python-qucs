@@ -1,6 +1,7 @@
 import sys
 import logging as l
 import re
+import os
 
 sys.path.append('..')
 import qucs.simulate
@@ -16,7 +17,7 @@ class DemoSimulationDescription(qucs.simulate.SimulationDescription):
     def __init__(self, name, n):
         self.name = name
         self.n = n
-        self.template_netlist_file = '/home/zonca/.qucs/netlist.txt'
+        self.template_netlist_file = os.path.join(os.path.expanduser('~'),'.qucs', 'netlist.txt') # path to netlist.txt
 
     def modify_netlist(self):
         # simple replacement of any low noise amplifier s2p input file with the number defined in the constructor
@@ -44,3 +45,11 @@ if __name__ == '__main__':
     l.basicConfig(level=l.DEBUG)
     simulations = demo()
     # qucs simulation outputs are saved in simulations[0].results as dictionary
+
+    #plotting
+    import matplotlib.pyplot as plt
+    plt.figure()
+    for sim in simulations:
+        plt.plot(sim.results['acfrequency'], sim.results['s21db'],label=str(sim))
+    plt.xlabel('Freq[GHz]'); plt.ylabel('S21[dB]'); plt.grid(); plt.legend(loc=0)
+    plt.show()

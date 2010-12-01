@@ -20,9 +20,9 @@ class SimulationDescription(object):
         self.name = name
         self.template_netlist_file = '/home/zonca/.qucs/netlist.txt'
 
-    def modify_netlist(self, template_netlist):
-        new_netlist = template_netlist
-        return new_netlist
+    def modify_netlist(self):
+        """To be reimplemented for modifying netlists"""
+        return self.template_netlist
     
     @property
     def template_netlist(self):
@@ -51,13 +51,13 @@ class Simulation(object):
 
         returns the filename"""
 
-        new_netlist = self.simulation_description.modify_netlist(self.template_netlist)
+        new_netlist = self.simulation_description.modify_netlist()
 
         # writes the netlist file in the netlists folder
         netlists_folder_name = 'netlists'
         if not os.path.isdir(netlists_folder_name):
             os.mkdir(netlists_folder_name)
-        filename = os.path.join(netlists_folder_name,'netlist%d.txt' % self.n)
+        filename = os.path.join(netlists_folder_name,'netlist_%s.txt' % self.simulation_description.name)
         f = open(filename, 'w')
         f.write(new_netlist)
         f.close()
@@ -65,7 +65,7 @@ class Simulation(object):
 
     def run(self):
         """Run simulation"""
-        self.netlist = self.simulation_description.modify_netlist()
+        self.modify_netlist()
         l.info("Checking netlist: " + self.netlist)
         import os
         try:
@@ -77,11 +77,13 @@ class Simulation(object):
             sys.exit()
         l.info("Running QUCS on: " + self.netlist)
         self.out = self.netlist.replace('netlist','output')
+        if not os.path.isdir('outputs'):
+            os.mkdir('outputs')
         os.system('qucsator -i %s -o %s' % (self.netlist,self.out))
 
     def extract_data(self):
         """Extracts data from qucsdata file into results"""
-        self.results = qucs.load_data(self.out)
+        self.results = extract.load_data(self.out).__dict__
 
     def write_result(self, output_x, output_y, how='csv'):
         """Write results to file. how = csv or pickle """
@@ -91,15 +93,15 @@ class Simulation(object):
         filename = os.path.join(folder_name,'out_%s.%s' % (self.simulation_description.name, how))
         l.info('Writing results to %s' % filename)
 
-        x = getattr(self.results, output_x)
-        y = getattr(self.results, output_y)
+        x = self.results.get(output_x)
+        y = self.results.get( output_y)
 
         try:
-            matrix = np.hstack((array(x)[:,newaxis],array(y)[:,newaxis]))
+            matrix = np.hstack((np.array(x)[:,np.newaxis],np.array(y)[:,np.newaxis]))
         except ValueError:
             print "Dimension mismatch:"
-            print "frequency:", freq[:,newaxis].shape
-            print "result:", array(result)[:,newaxis].shape
+            print "frequency:", freq[:,np.newaxis].shape
+            print "result:", array(result)[:,np.newaxis].shape
             print "simulation ",self.simulation_description.name
             raise
 
