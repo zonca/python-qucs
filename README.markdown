@@ -14,6 +14,18 @@ so that a system can be debugged interactively at several development stages.
 
 The _simulate_ module parses the netlist produced interactively by the QUCS GUI and runs user defined regular expressions to create and save to disk the target set of netlists, then runs qucsator on each of them. The _extract_ and _plot_ modules allow then to read the custom QUCS file format, manipulate and plot the results.
 
+Usage
+-----
+
+The easiest way is to run the demo:
+
+1. copy pythonqucstest_prj in your .qucs folder
+2. open QUCS GUI and run the pythonqucstest schematic in order to create the netlist
+3. check that QUCS created the netlist text file, usually in .qucs/netlist.txt
+4. run python demo.py in the demo folder
+5. simulations for 2 netlists with 2 different amplifiers are automatically run, results are plotted and written as csv files under the csv folder
+6. netlists and raw output files are written in the subfolders netlists and outputs
+
 Citing
 ------
 
