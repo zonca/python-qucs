@@ -29,8 +29,9 @@ class SimulationDescription(object):
         """Read the default netlist from the QUCS folder"""
         
         f = open(self.template_netlist_file, 'r')
-        self.template_netlist = f.read()
-        f.close
+        template_netlist = f.read()
+        f.close()
+        return template_netlist
 
     def __repr__(self):
         return 'SimulationDescription:%s' % self.name
@@ -64,7 +65,6 @@ class Simulation(object):
 
     def run(self):
         """Run simulation"""
-        self.simulation_description.read_default_netlist()
         self.netlist = self.simulation_description.modify_netlist()
         l.info("Checking netlist: " + self.netlist)
         import os
@@ -109,10 +109,10 @@ class Simulation(object):
             with open(filename, 'wb') as f:
                 cPickle.dump(matrix,f,-1)
 
-    class BadNetlistFormatException(Exception):
-        """Exception raised by qucsator check routine"""
-        def __init__(self, netlist_filename):
-            Exception.__init__(self)
-            self.netlist_filename = netlist_filename
-        def __str__(self):
-            return "Bad format in file: " + self.netlist_filename
+class BadNetlistFormatException(Exception):
+    """Exception raised by qucsator check routine"""
+    def __init__(self, netlist_filename):
+        Exception.__init__(self)
+        self.netlist_filename = netlist_filename
+    def __str__(self):
+        return "Bad format in file: " + self.netlist_filename
