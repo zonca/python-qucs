@@ -6,6 +6,7 @@ import csv
 import numpy as np
 
 import qucs.extract
+from qucs.extract import load_data
 
 class SimulationDescription(object):
     ''' Contains the description of the simulation
@@ -83,7 +84,7 @@ class Simulation(object):
 
     def extract_data(self):
         """Extracts data from qucsdata file into results"""
-        self.results = extract.load_data(self.out).__dict__
+        self.results = load_data(self.out).__dict__
 
     def write_result(self, output_x, output_y, how='csv'):
         """Write results to file. how = csv or pickle """
@@ -109,7 +110,7 @@ class Simulation(object):
             np.savetxt(filename, matrix, delimiter = ',')
         elif how == 'pickle':
             with open(filename, 'wb') as f:
-                cPickle.dump(matrix,f,-1)
+                pickle.dump(matrix,f,-1)
 
 class BadNetlistFormatException(Exception):
     """Exception raised by qucsator check routine"""

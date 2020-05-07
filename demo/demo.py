@@ -11,9 +11,9 @@ class DemoSimulationDescription(qucs.simulate.SimulationDescription):
 
     it is necessary to reimplement the constructor and the modify netlist method
     the modify_netlist method replaces the amplifier input
-    output 
+    output
     '''
-    
+
     def __init__(self, name, n):
         self.name = name
         self.n = n

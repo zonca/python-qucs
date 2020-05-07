@@ -4,3 +4,9 @@ ipython_log*
 dist/
 build/
 qucs.egg-info
+demo/netlists/
+demo/csv/
+demo/outputs
+csv/
+outputs/
+netlists/
