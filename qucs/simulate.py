@@ -1,11 +1,12 @@
-import cPickle
+import pickle
 import os.path
 import re
 import logging as l
 import csv
 import numpy as np
 
-import extract
+import qucs.extract
+from qucs.extract import load_data
 
 class SimulationDescription(object):
     ''' Contains the description of the simulation
@@ -13,7 +14,7 @@ class SimulationDescription(object):
     it is necessary to reimplement the constructor and the modify_netlist method
     in order to create dinamically the new netlist from the original created with QUCS GUI
     '''
-        
+
     output = None
 
     def __init__(self, name):
@@ -23,11 +24,11 @@ class SimulationDescription(object):
     def modify_netlist(self):
         """To be reimplemented for modifying netlists"""
         return self.template_netlist
-    
+
     @property
     def template_netlist(self):
         """Read the default netlist from the QUCS folder"""
-        
+
         f = open(self.template_netlist_file, 'r')
         template_netlist = f.read()
         f.close()
@@ -71,7 +72,7 @@ class Simulation(object):
         try:
             if os.system('qucsator -c -i ' + self.netlist) != 0:
                 raise BadNetlistFormatException(self.netlist)
-        except BadNetlistFormatException, x:
+        except BadNetlistFormatException as x:
             import sys
             l.error('File=' + x.netlist_filename) # defined in the exception
             sys.exit()
@@ -83,11 +84,11 @@ class Simulation(object):
 
     def extract_data(self):
         """Extracts data from qucsdata file into results"""
-        self.results = extract.load_data(self.out).__dict__
+        self.results = load_data(self.out).__dict__
 
     def write_result(self, output_x, output_y, how='csv'):
         """Write results to file. how = csv or pickle """
-        folder_name = how 
+        folder_name = how
         if not os.path.isdir(folder_name):
             os.mkdir(folder_name)
         filename = os.path.join(folder_name,'out_%s.%s' % (self.simulation_description.name, how))
@@ -99,17 +100,17 @@ class Simulation(object):
         try:
             matrix = np.hstack((np.array(x)[:,np.newaxis],np.array(y)[:,np.newaxis]))
         except ValueError:
-            print "Dimension mismatch:"
-            print "frequency:", freq[:,np.newaxis].shape
-            print "result:", array(result)[:,np.newaxis].shape
-            print "simulation ",self.simulation_description.name
+            print("Dimension mismatch:")
+            print("frequency:", freq[:,np.newaxis].shape)
+            print("result:", array(result)[:,np.newaxis].shape)
+            print("simulation ", self.simulation_description.name)
             raise
 
         if how == 'csv':
             np.savetxt(filename, matrix, delimiter = ',')
         elif how == 'pickle':
             with open(filename, 'wb') as f:
-                cPickle.dump(matrix,f,-1)
+                pickle.dump(matrix,f,-1)
 
 class BadNetlistFormatException(Exception):
     """Exception raised by qucsator check routine"""

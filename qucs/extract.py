@@ -3,13 +3,13 @@
 import re
 import sys
 import array, traceback
-import pylab 
+import pylab
 
 class Data: pass
-class Val(array.ArrayType): 
+class Val(array.ArrayType):
     len=0
     dep=""
-    
+
 
 def load_data(filename):
     state="end"
@@ -25,12 +25,12 @@ def load_data(filename):
                 continue
             if tag[0]=="/":
                 state="end"
-                print "Number of Dimensions:",len(valdep)
+                print("Number of Dimensions:",len(valdep))
                 if len(valdep)>1:
                     shape=[]
                     for i in range(len(valdep),0,-1):
                         shape.append(dat.__dict__[valdep[i-1]].len)
-                    val=pylab.array(val)                        
+                    val=pylab.array(val)
                     val=pylab.reshape(val,shape)
                 dat.__dict__[name]=val
             else:
@@ -50,41 +50,38 @@ def load_data(filename):
         else:
             if state=="start":
                 if "j" in line:
-                    print line
+                    print(line)
                     line=line.replace("j","")
                     line="%sj"%line.strip()
                     try:
-                        val.append(complex(line))                
+                        val.append(complex(line))
                     except:
                         traceback.print_exc()
-                        print line # add nan check
-                        print name
-                        print len(val)
-                else:                    
-                    val.append(float(line))                
+                        print(line) # add nan check
+                        print(name)
+                        print(len(val))
+                else:
+                    val.append(float(line))
             else:
-                print "Parser Error:",line
+                print("Parser Error:",line)
 
-    return dat      
-            
+    return dat
+
 
 if __name__ == "__main__":
-    
+
 
     dat=load_data(sys.argv[1])
 
-    print "Variables in",sys.argv[1]
+    print("Variables in",sys.argv[1])
 
     for key in dat.__dict__.keys():
-        print "\nName =",key
+        print("\nName =",key)
         try:
-            print "\tLen=",dat.__dict__[key].len
+            print("\tLen=",dat.__dict__[key].len)
         except:
             pass
         try:
-            print "\tDep=",dat.__dict__[key].dep
+            print("\tDep=",dat.__dict__[key].dep)
         except:
             pass
-      
-
-

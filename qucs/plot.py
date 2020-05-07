@@ -6,7 +6,7 @@ TODO="""
 """
 
 from pylab import *
-from qucs import load_data 
+from qucs.extract import load_data
 import sys, traceback
 import getopt
 import pylab as pl
@@ -24,7 +24,7 @@ def main():
         sys.exit(2)
     output = None
     verbose = False
-    
+
     global dat
     dat={}
     for o, a in opts:
@@ -36,7 +36,7 @@ def main():
         if o in ("-o", "--output"):
             output = a
         if o in ("-f", "--file"):
-            filename=a 
+            filename=a
             dat=load_data(filename)
 
     filename=args[0]
