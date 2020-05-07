@@ -1,3 +1,6 @@
 *pyc
 ipython_log*
 *swp
+dist/
+build/
+qucs.egg-info
