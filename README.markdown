@@ -1,3 +1,7 @@
+**This package is abandoned**
+
+it is under GPLv3, feel free to fork it and improve it.
+
 Python package for automating QUCS simulations
 ==============================================
 
